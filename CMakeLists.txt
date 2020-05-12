@@ -41,4 +41,4 @@ target_include_directories(simpleVulkan PRIVATE "${VULKANSDK}/include" )
 target_link_directories(simpleVulkan PRIVATE "${VULKANSDK}/lib")
 target_link_libraries(simpleVulkan vulkan glfw)
 
-add_executable(interval )
+#add_executable(interval )
