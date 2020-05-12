@@ -23,10 +23,22 @@ add_executable(asyncAPI asyncAPI.cu)
 find_package(MPI REQUIRED)
 include_directories(${MPI_CXX_INCLUDE_DIRS})
 
-add_executable(simpleMPI simpleMPI.cpp simpleMPI.h simpleMPI.cu)
+add_executable(simpleMPI simpleMPI.cpp simpleMPI.cu)
 target_link_libraries(simpleMPI ${MPI_CXX_LIBRARIES})
 
 add_executable(cudaTensorCoreGemm cudaTensorCoreGemm.cu)
 target_link_libraries(cudaTensorCoreGemm)
 
 add_executable(bandwidthTest bandwidthTest.cu)
+
+find_package(OpenGL REQUIRED)
+add_executable(simpleGL simpleGL.cu)
+target_link_libraries(simpleGL GL GLU glut)
+
+set(VULKANSDK = /kws_space/vulkansdk_1.2.135.0/x86_64)
+add_executable(simpleVulkan vulkanCUDASinewave.cu)
+target_include_directories(simpleVulkan PRIVATE "${VULKANSDK}/include" )
+target_link_directories(simpleVulkan PRIVATE "${VULKANSDK}/lib")
+target_link_libraries(simpleVulkan vulkan glfw)
+
+add_executable(interval )
