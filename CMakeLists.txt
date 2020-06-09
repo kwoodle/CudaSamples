@@ -11,16 +11,9 @@ set(CMAKE_CUDA_FLAGS ${CMAKE_CUDA_FLAGS} "-arch=sm_75")
 set(cuda_include_dirs = ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
 set(cuda_samples_include = "${cuda_include_dirs}/../../../samples/common/inc/")
 include_directories(${cuda_samples_include})
-
+include_directories(${cuda_include_dirs})
 set(CUDA_VERBOSE_BUILD ON)
 set(CUDA_SEPARABLE_COMPILATION ON) # Allow multiple CUDA files compilation
-
-add_executable(CudaSamples main.cu)
-
-set_target_properties(
-        CudaSamples
-        PROPERTIES
-        CUDA_SEPARABLE_COMPILATION ON)
 
 add_executable(asyncAPI asyncAPI.cu)
 set(MPIEXEC_EXECUTABLE /opt/openmpi-cuda-4.0.3/bin/mpicxx)
@@ -43,8 +36,14 @@ target_link_libraries(simpleGL GL GLU glut)
 
 set(VULKANSDK = /kws_space/vulkansdk_1.2.135.0/x86_64)
 add_executable(simpleVulkan vulkanCUDASinewave.cu)
-target_include_directories(simpleVulkan PRIVATE "${VULKANSDK}/include" )
+target_include_directories(simpleVulkan PRIVATE "${VULKANSDK}/include")
 target_link_directories(simpleVulkan PRIVATE "${VULKANSDK}/lib")
 target_link_libraries(simpleVulkan vulkan glfw)
 
-#add_executable(interval )
+add_executable(deviceQuery deviceQuery.cpp)
+
+set_property(TARGET deviceQuery PROPERTY LINKER_LANGUAGE CUDA)
+target_link_libraries(deviceQuery cuda)
+
+add_executable(deviceQueryDrv deviceQueryDrv.cpp)
+target_link_libraries(deviceQueryDrv cuda)
