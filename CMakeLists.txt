@@ -1,9 +1,10 @@
+# NO LONGER NEEDS THESE SETTINGS?
 # Needs CUDAHOSTCXX=/usr/bin/cuda-g++;CUDA_LIB_PATH=/usr/local/cuda/lib64 in
 # CLion Settings | Build, Execution, Deployment | CMake > Environment on fedora
-# and CUDAHOSTCXX=/usr/bin/g++-8 on pop_os
+# and CUDAHOSTCXX=/usr/bin/g++-8;CUDA_LIB_PATH=/usr/lib/cuda/lib64 on pop_os
 
 cmake_minimum_required(VERSION 3.16)
-
+set(CMAKE_CUDA_HOST_COMPILER /usr/bin/g++-8)
 project(CudaSamples LANGUAGES CXX CUDA)
 #set(ENV{MPI_HOME} /usr/local )
 set(CMAKE_CUDA_STANDARD 14)
