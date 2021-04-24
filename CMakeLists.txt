@@ -1,25 +1,19 @@
-# NO LONGER NEEDS THESE SETTINGS?
-# Needs CUDAHOSTCXX=/usr/bin/cuda-g++;CUDA_LIB_PATH=/usr/local/cuda/lib64 in
-# CLion Settings | Build, Execution, Deployment | CMake > Environment on fedora
-# and CUDAHOSTCXX=/usr/bin/g++-8;CUDA_LIB_PATH=/usr/lib/cuda/lib64 on pop_os
+# Changes for cmake 3.18
+cmake_minimum_required(VERSION 3.18)
+#list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-cmake_minimum_required(VERSION 3.16)
-set(CMAKE_CUDA_HOST_COMPILER /usr/bin/g++-8)
 project(CudaSamples LANGUAGES CXX CUDA)
-#set(ENV{MPI_HOME} /usr/local )
 set(CMAKE_CUDA_STANDARD 14)
-set(CMAKE_CUDA_FLAGS ${CMAKE_CUDA_FLAGS} "-arch=sm_75")
+
 set(cuda_include_dirs = ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
 set(cuda_samples_include = "${cuda_include_dirs}/../../../samples/common/inc/")
+message(STATUS "cuda_include_dirs = ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}")
 include_directories(${cuda_samples_include})
 include_directories(${cuda_include_dirs})
 set(CUDA_VERBOSE_BUILD ON)
-set(CUDA_SEPARABLE_COMPILATION ON) # Allow multiple CUDA files compilation
 
 add_executable(asyncAPI asyncAPI.cu)
-set(MPIEXEC_EXECUTABLE /opt/openmpi-cuda-4.0.3/bin/mpicxx)
-#set(MPI_CXX_COMPILER /usr/local/bin/mpicxx)
-#set(MPI_HOME /usr/local)
+
 find_package(MPI REQUIRED)
 include_directories(${MPI_CXX_INCLUDE_DIRS})
 
@@ -43,8 +37,25 @@ target_link_libraries(simpleVulkan vulkan glfw)
 
 add_executable(deviceQuery deviceQuery.cpp)
 
-set_property(TARGET deviceQuery PROPERTY LINKER_LANGUAGE CUDA)
-target_link_libraries(deviceQuery cuda)
-
 add_executable(deviceQueryDrv deviceQueryDrv.cpp)
 target_link_libraries(deviceQueryDrv cuda)
+
+include_directories(/opt/libcutensor/include)
+add_executable(contraction contraction.cu)
+target_link_directories(contraction PRIVATE /opt/libcutensor/lib/10.2)
+target_link_libraries(contraction cutensor cudart)
+
+add_executable(reduction reduction.cu)
+target_link_directories(reduction PRIVATE /opt/libcutensor/lib/10.2)
+target_link_libraries(reduction cutensor)
+
+find_library(CUDART_LIBRARY cudart ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
+find_library(NVJPEG_LIBRARY nvjpeg ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
+find_library(NPPC_LIBRARY nppc ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
+find_library(NPPIG_LIBRARY nppig ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
+find_library(CULIBOS culibos ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
+
+add_executable(image_resize imageResize.cpp)
+target_link_libraries(image_resize ${NVJPEG_LIBRARY} ${NPPC_LIBRARY} ${NPPIG_LIBRARY} ${CUDART_LIBRARY})
+set_property(TARGET reduction contraction bandwidthTest simpleVulkan simpleGL
+        cudaTensorCoreGemm simpleMPI asyncAPI PROPERTY CUDA_ARCHITECTURES 75)
