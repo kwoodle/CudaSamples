@@ -1,6 +1,7 @@
 # Changes for cmake 3.18
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.16)
 #list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+#set(CMAKE_CUDA_HOST_COMPILER /usr/bin/g++-8)
 
 project(CudaSamples LANGUAGES CXX CUDA)
 set(CMAKE_CUDA_STANDARD 14)
@@ -35,7 +36,10 @@ target_include_directories(simpleVulkan PRIVATE "${VULKANSDK}/include")
 target_link_directories(simpleVulkan PRIVATE "${VULKANSDK}/lib")
 target_link_libraries(simpleVulkan vulkan glfw)
 
+find_library(CUDART_LIBRARY cudart ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
+message(STATUS "CUDART_LIBRARY = ${CUDART_LIBRARY}")
 add_executable(deviceQuery deviceQuery.cpp)
+target_link_libraries(deviceQuery ${CUDART_LIBRARY})
 
 add_executable(deviceQueryDrv deviceQueryDrv.cpp)
 target_link_libraries(deviceQueryDrv cuda)
@@ -43,13 +47,12 @@ target_link_libraries(deviceQueryDrv cuda)
 include_directories(/opt/libcutensor/include)
 add_executable(contraction contraction.cu)
 target_link_directories(contraction PRIVATE /opt/libcutensor/lib/10.2)
-target_link_libraries(contraction cutensor cudart)
+target_link_libraries(contraction cutensor)
 
 add_executable(reduction reduction.cu)
 target_link_directories(reduction PRIVATE /opt/libcutensor/lib/10.2)
 target_link_libraries(reduction cutensor)
 
-find_library(CUDART_LIBRARY cudart ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
 find_library(NVJPEG_LIBRARY nvjpeg ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
 find_library(NPPC_LIBRARY nppc ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
 find_library(NPPIG_LIBRARY nppig ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
